@@ -1,0 +1,50 @@
+object FrmOTAHistoryProjects: TFrmOTAHistoryProjects
+  Left = 0
+  Top = 0
+  BorderStyle = bsDialog
+  Caption = 'History'
+  ClientHeight = 343
+  ClientWidth = 645
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poScreenCenter
+  OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
+  OnShow = FormShow
+  PixelsPerInch = 96
+  TextHeight = 13
+  object pnlTop: TPanel
+    Left = 0
+    Top = 0
+    Width = 645
+    Height = 33
+    Align = alTop
+    BevelOuter = bvNone
+    TabOrder = 0
+    object edtSearch: TEdit
+      Left = 8
+      Top = 6
+      Width = 369
+      Height = 21
+      TabOrder = 0
+      OnChange = edtSearchChange
+      OnKeyDown = edtSearchKeyDown
+    end
+  end
+  object lstProjects: TListBox
+    Left = 0
+    Top = 33
+    Width = 645
+    Height = 310
+    Align = alClient
+    ItemHeight = 13
+    TabOrder = 1
+    OnDblClick = lstProjectsDblClick
+    OnKeyDown = lstProjectsKeyDown
+  end
+end
