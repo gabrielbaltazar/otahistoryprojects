@@ -34,8 +34,12 @@ implementation
 
 { TFSDHistoryProjectsNotifier }
 
+uses
+  Vcl.Dialogs;
+
 procedure TOTAHPNotifier.AfterCompile(Succeeded: Boolean);
 begin
+
 end;
 
 procedure TOTAHPNotifier.BeforeCompile(const Project: IOTAProject; var Cancel: Boolean);
@@ -49,7 +53,6 @@ var
   iniFileName: String;
   fileExt: string;
 begin
-  Cancel := False;
   fileExt := ExtractFileExt(FileName);
 
   if (not fileExt.Equals('.dproj')) and
