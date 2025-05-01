@@ -3,29 +3,28 @@ unit OTAHistoryProjects.Binding;
 interface
 
 uses
-  ToolsAPI,
   System.SysUtils,
   System.Classes,
-  OTAHistoryProjects.Forms,
-  Vcl.Menus;
+  ToolsAPI,
+  Vcl.Menus,
+  OTAHistoryProjects.Forms;
 
-type TOTAHPBinding = class(TNotifierObject, IOTAKeyboardBinding)
-
+type
+  TOTAHPBinding = class(TNotifierObject, IOTAKeyboardBinding)
   private
-    procedure Execute(const Context: IOTAKeyContext; KeyCode: TShortcut; var BindingResult: TKeyBindingResult);
-
+    procedure Execute(const AContext: IOTAKeyContext; AKeyCode: TShortcut;
+      var ABindingResult: TKeyBindingResult);
   protected
-    function GetBindingType : TBindingType;
-    function GetDisplayName : string;
-    function GetName        : string;
-    procedure BindKeyboard(const BindingServices: IOTAKeyBindingServices);
-
+    function GetBindingType: TBindingType;
+    function GetDisplayName: string;
+    function GetName: string;
+    procedure BindKeyboard(const ABindingServices: IOTAKeyBindingServices);
   public
     class function New: IOTAKeyboardBinding;
-end;
+  end;
 
 var
-  Index : Integer = -1;
+  Index: Integer = -1;
 
 procedure RegisterHistoryProjectBinding;
 
@@ -39,36 +38,37 @@ end;
 
 { TOTAHPBinding }
 
-procedure TOTAHPBinding.BindKeyboard(const BindingServices: IOTAKeyBindingServices);
+procedure TOTAHPBinding.BindKeyboard(const ABindingServices: IOTAKeyBindingServices);
 begin
-  BindingServices.AddKeyBinding([TextToShortCut('Ctrl+Shift+P')], Execute,
+  ABindingServices.AddKeyBinding([TextToShortCut('Ctrl+Shift+P')], Execute,
     nil, 0, '', 'imOTAHistoryProjects');
 end;
 
-procedure TOTAHPBinding.Execute(const Context: IOTAKeyContext; KeyCode: TShortcut; var BindingResult: TKeyBindingResult);
+procedure TOTAHPBinding.Execute(const AContext: IOTAKeyContext; AKeyCode: TShortcut;
+  var ABindingResult: TKeyBindingResult);
 begin
-  BindingResult := krHandled;
+  ABindingResult := krHandled;
   ShowHistoryProjects;
 end;
 
 function TOTAHPBinding.GetBindingType: TBindingType;
 begin
-  result := btPartial;
+  Result := btPartial;
 end;
 
 function TOTAHPBinding.GetDisplayName: string;
 begin
-  result := Self.ClassName;
+  Result := Self.ClassName;
 end;
 
 function TOTAHPBinding.GetName: string;
 begin
-  result := Self.ClassName;
+  Result := Self.ClassName;
 end;
 
 class function TOTAHPBinding.New: IOTAKeyboardBinding;
 begin
-  result := Self.Create;
+  Result := Self.Create;
 end;
 
 initialization

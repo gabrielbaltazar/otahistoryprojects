@@ -5,30 +5,47 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
-  System.IniFiles, ToolsAPI, Vcl.AppEvnts;
+  ToolsAPI, Vcl.AppEvnts, Vcl.Imaging.pngimage,
+  System.Generics.Collections,
+  OTAHistoryProjects.Classes, Data.DB, Vcl.Grids, Vcl.DBGrids, Vcl.DBCtrls, Datasnap.DBClient;
 
 type
   TFrmOTAHistoryProjects = class(TForm)
-    pnlTop: TPanel;
-    edtSearch: TEdit;
-    lstProjects: TListBox;
+    PnlTop: TPanel;
+    EdtSearch: TEdit;
+    PnlTitle: TPanel;
+    PnlBack: TPanel;
+    Label7: TLabel;
+    EdtProjectType: TRadioGroup;
+    PnlBottom: TPanel;
+    Label1: TLabel;
+    Label3: TLabel;
+    Label2: TLabel;
+    GridProjects: TDBGrid;
+    DBText1: TDBText;
+    DBText2: TDBText;
+    DBText3: TDBText;
+    CdsProjects: TClientDataSet;
+    DataSourceProjects: TDataSource;
     procedure FormShow(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
-    procedure edtSearchChange(Sender: TObject);
-    procedure edtSearchKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure lstProjectsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure lstProjectsDblClick(Sender: TObject);
+    procedure EdtSearchKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure LstProjectsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure LstProjectsDblClick(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure CdsProjectsFilterRecord(DataSet: TDataSet; var Accept: Boolean);
+    procedure EdtProjectTypeClick(Sender: TObject);
+    procedure EdtSearchChange(Sender: TObject);
+    procedure GridProjectsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
-    FIniFile: TIniFile;
-    { Private declarations }
+    FProjects: TObjectList<TOTAHPProject>;
+
+    procedure CreateDataSet;
+    procedure Filter;
 
     procedure OpenProject;
-
-    procedure loadIniFile;
-    procedure listProjects;
+    procedure ListProjects;
   public
-    { Public declarations }
+    destructor Destroy; override;
   end;
 
 var
@@ -42,7 +59,6 @@ procedure ShowHistoryProjects;
 begin
   if not Assigned(FrmOTAHistoryProjects) then
     FrmOTAHistoryProjects := TFrmOTAHistoryProjects.Create(nil);
-
   FrmOTAHistoryProjects.ShowModal;
 end;
 
@@ -52,40 +68,84 @@ end;
 
 procedure TFrmOTAHistoryProjects.OpenProject;
 var
-  projectPath: String;
-  selected: string;
-  index: Integer;
+  LProjectPath: string;
 begin
-  index := 0;
-  if (lstProjects.ItemIndex >= 0) then
-    index := lstProjects.ItemIndex;
-
-  selected := lstProjects.Items[index];
-  projectPath := (Copy(selected, Pos('|', selected) + 1, 5000)).Trim;
-
+  LProjectPath := CdsProjects.FieldByName('FullName').AsString;
   (BorlandIDEServices as IOTAModuleServices)
-    .OpenModule(projectPath);
-
+    .OpenModule(LProjectPath);
   ModalResult := mrOk;
 end;
 
-procedure TFrmOTAHistoryProjects.edtSearchChange(Sender: TObject);
+procedure TFrmOTAHistoryProjects.CdsProjectsFilterRecord(DataSet: TDataSet;
+  var Accept: Boolean);
+var
+  LProjectType: string;
+  LSearch: string;
 begin
-  listProjects;
+  Accept := True;
+  LProjectType := EmptyStr;
+  case EdtProjectType.ItemIndex of
+    1: LProjectType := '.dproj';
+    2: LProjectType := '.dpk';
+    3: LProjectType := '.groupproj';
+  end;
+
+  if LProjectType <> EmptyStr then
+    Accept := DataSet.FieldByName('Type').AsString.ToLower.Equals(LProjectType);
+
+  if not Accept then
+    Exit;
+
+  LSearch := LowerCase(EdtSearch.Text).Trim;
+  Accept := (LSearch.IsEmpty) or
+    (DataSet.FieldByName('FullName').AsString.ToLower.Contains(LSearch));
 end;
 
-procedure TFrmOTAHistoryProjects.edtSearchKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+procedure TFrmOTAHistoryProjects.CreateDataSet;
+begin
+  if CdsProjects.FieldCount = 0 then
+  begin
+    CdsProjects.FieldDefs.Add('Name', ftString, 200);
+    CdsProjects.FieldDefs.Add('FullName', ftString, 5000);
+    CdsProjects.FieldDefs.Add('Type', ftString, 20);
+    CdsProjects.FieldDefs.Add('Path', ftString, 5000);
+    CdsProjects.FieldDefs.Add('ProjectName', ftString, 200);
+    CdsProjects.CreateDataSet;
+    CdsProjects.Active := True;
+  end;
+end;
+
+destructor TFrmOTAHistoryProjects.Destroy;
+begin
+  FProjects.Free;
+  inherited;
+end;
+
+procedure TFrmOTAHistoryProjects.EdtProjectTypeClick(Sender: TObject);
+begin
+  Filter;
+end;
+
+procedure TFrmOTAHistoryProjects.EdtSearchChange(Sender: TObject);
+begin
+  Filter;
+end;
+
+procedure TFrmOTAHistoryProjects.EdtSearchKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if Key = VK_RETURN then
-    OpenProject;
-
+    OpenProject
+  else
   if Key = VK_ESCAPE then
-    Close;
+    Close
+  else
+    Filter;
 end;
 
-procedure TFrmOTAHistoryProjects.FormDestroy(Sender: TObject);
+procedure TFrmOTAHistoryProjects.Filter;
 begin
-  FreeAndNil(FIniFile);
+  CdsProjects.Filtered := False;
+  CdsProjects.Filtered := True;
 end;
 
 procedure TFrmOTAHistoryProjects.FormKeyDown(Sender: TObject;
@@ -97,60 +157,49 @@ end;
 
 procedure TFrmOTAHistoryProjects.FormShow(Sender: TObject);
 begin
-  listProjects;
-  edtSearch.SetFocus;
+  CreateDataSet;
+  ListProjects;
+  EdtSearch.SetFocus;
 end;
 
-procedure TFrmOTAHistoryProjects.listProjects;
-var
-  sections: TStrings;
-  search : string;
-  projectName: String;
-  fileName: string;
-  i: Integer;
+procedure TFrmOTAHistoryProjects.GridProjectsKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
 begin
-  loadIniFile;
-  lstProjects.Clear;
-  search := LowerCase( edtSearch.Text );
-  sections := TStringList.Create;
-  try
-    FIniFile.ReadSections(sections);
+  if Key = VK_RETURN then
+    OpenProject;
+end;
 
-    for i := 0 to Pred(sections.Count) do
-    begin
-      projectName := FIniFile.ReadString(sections[i], 'ProjectName', '');
-      fileName := sections[i];
+procedure TFrmOTAHistoryProjects.ListProjects;
+var
+  LProject: TOTAHPProject;
+begin
+  if not Assigned(FProjects) then
+    FProjects := TOTAHPProjectLoad.New.ListAll;
 
-      if not FileExists(fileName) then
-        Continue;
+  CdsProjects.First;
+  while not CdsProjects.Eof do
+    CdsProjects.Delete;
 
-      if (search.Trim.IsEmpty) or
-         (fileName.ToLower.Contains(search)) or
-         (projectName.ToLower.Contains(search)) then
-        lstProjects.Items.Add(projectName + ' | ' + fileName);
-    end;
-  finally
-    sections.Free;
+  for LProject in FProjects do
+  begin
+    CdsProjects.Append;
+    CdsProjects.FieldByName('Name').AsString := LProject.Name;
+    CdsProjects.FieldByName('FullName').AsString := LProject.FullName;
+    CdsProjects.FieldByName('Type').AsString := LProject.&Type;
+    CdsProjects.FieldByName('Path').AsString := LProject.Path;
+    CdsProjects.FieldByName('ProjectName').AsString := LProject.ProjectName;
+    CdsProjects.Post;
   end;
+  CdsProjects.IndexFieldNames := 'Name';
+  CdsProjects.First;
 end;
 
-procedure TFrmOTAHistoryProjects.loadIniFile;
-var
-  iniFileName: string;
-begin
-  FreeAndNil(FIniFile);
-  iniFileName := ExtractFilePath(GetModuleName(HInstance)) +
-      '\OTAHistoryProjects\HistoryProjects.ini';
-
-  FIniFile := TIniFile.Create(iniFileName);
-end;
-
-procedure TFrmOTAHistoryProjects.lstProjectsDblClick(Sender: TObject);
+procedure TFrmOTAHistoryProjects.LstProjectsDblClick(Sender: TObject);
 begin
   OpenProject;
 end;
 
-procedure TFrmOTAHistoryProjects.lstProjectsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+procedure TFrmOTAHistoryProjects.LstProjectsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if Key = VK_RETURN then
     OpenProject;
@@ -160,10 +209,10 @@ begin
 end;
 
 initialization
-  {$IF CompilerVersion >= 32.0}
+{$IF CompilerVersion >= 32.0}
   (BorlandIDEServices as IOTAIDEThemingServices250)
     .RegisterFormClass(TFrmOTAHistoryProjects);
-  {$ENDIF}
+{$ENDIF}
 
 finalization
   FrmOTAHistoryProjects.Free;

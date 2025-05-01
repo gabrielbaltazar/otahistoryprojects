@@ -3,8 +3,8 @@ unit OTAHistoryProjects.Registry;
 interface
 
 uses
-  ToolsAPI,
   System.SysUtils,
+  ToolsAPI,
   OTAHistoryProjects.MainMenu,
   OTAHistoryProjects.Notifier,
   OTAHistoryProjects.Forms,

@@ -30,7 +30,10 @@ package OTAHistoryProjectsPkg;
 
 requires
   rtl,
-  designide;
+  designide,
+  dbrtl,
+  vcldb,
+  dsnap;
 
 contains
   OTAHistoryProjects.ContextMenu in 'OTAHistoryProjects.ContextMenu.pas',
@@ -38,6 +41,7 @@ contains
   OTAHistoryProjects.Notifier in 'OTAHistoryProjects.Notifier.pas',
   OTAHistoryProjects.Binding in 'OTAHistoryProjects.Binding.pas',
   OTAHistoryProjects.Registry in 'OTAHistoryProjects.Registry.pas',
-  OTAHistoryProjects.MainMenu in 'OTAHistoryProjects.MainMenu.pas';
+  OTAHistoryProjects.MainMenu in 'OTAHistoryProjects.MainMenu.pas',
+  OTAHistoryProjects.Classes in 'OTAHistoryProjects.Classes.pas';
 
 end.

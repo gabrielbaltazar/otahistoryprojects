@@ -3,35 +3,30 @@ unit OTAHistoryProjects.MainMenu;
 interface
 
 uses
-  ToolsAPI,
   System.SysUtils,
   System.Classes,
+  System.Generics.Collections,
   Vcl.Dialogs,
   Vcl.Menus,
   Vcl.Graphics,
   Vcl.ComCtrls,
-  OTAHistoryProjects.Forms,
-  System.Generics.Collections;
+  ToolsAPI,
+  OTAHistoryProjects.Forms;
 
-type TOTAHPMainMenuWizard = class(TNotifierObject, IOTAWizard)
-
+type
+  TOTAHPMainMenuWizard = class(TNotifierObject, IOTAWizard)
   private
-    procedure OnClickMenuHitoryProjects(Sender: TObject);
-
+    procedure OnClickMenuHitoryProjects(ASender: TObject);
   protected
     procedure CreateMenu;
-
     function GetIDString: string;
     function GetName: string;
     function GetState: TWizardState;
-
     procedure Execute;
-
   public
     class function New: IOTAWizard;
-    constructor create;
-    destructor Destroy; override;
-end;
+    constructor Create;
+  end;
 
 procedure RegisterMainMenuWizard;
 
@@ -44,56 +39,49 @@ end;
 
 { TOTAHPMainMenuWizard }
 
-constructor TOTAHPMainMenuWizard.create;
+constructor TOTAHPMainMenuWizard.Create;
 begin
   CreateMenu;
 end;
 
 procedure TOTAHPMainMenuWizard.CreateMenu;
 var
-  menuItem: TMenuItem;
+  LMenuItem: TMenuItem;
 begin
-  menuItem := TMenuItem.Create(nil);
-  menuItem.Name := 'imOTAHistoryProjects';
-  menuItem.Caption := 'History Projects';
-  menuItem.OnClick := Self.OnClickMenuHitoryProjects;
+  LMenuItem := TMenuItem.Create(nil);
+  LMenuItem.Name := 'imOTAHistoryProjects';
+  LMenuItem.Caption := 'History Projects';
+  LMenuItem.OnClick := Self.OnClickMenuHitoryProjects;
 
   (BorlandIDEServices as INTAServices)
-    .AddActionMenu('ToolsMenu', nil, menuItem, False, True);
-end;
-
-destructor TOTAHPMainMenuWizard.Destroy;
-begin
-
-  inherited;
+    .AddActionMenu('ToolsMenu', nil, LMenuItem, False, True);
 end;
 
 procedure TOTAHPMainMenuWizard.Execute;
 begin
-
 end;
 
 function TOTAHPMainMenuWizard.GetIDString: string;
 begin
-  result := Self.ClassName;
+  Result := Self.ClassName;
 end;
 
 function TOTAHPMainMenuWizard.GetName: string;
 begin
-  result := Self.ClassName;
+  Result := Self.ClassName;
 end;
 
 function TOTAHPMainMenuWizard.GetState: TWizardState;
 begin
-  result := [wsEnabled];
+  Result := [wsEnabled];
 end;
 
 class function TOTAHPMainMenuWizard.New: IOTAWizard;
 begin
-  result := Self.create;
+  Result := Self.Create;
 end;
 
-procedure TOTAHPMainMenuWizard.OnClickMenuHitoryProjects(Sender: TObject);
+procedure TOTAHPMainMenuWizard.OnClickMenuHitoryProjects(ASender: TObject);
 begin
   ShowHistoryProjects;
 end;

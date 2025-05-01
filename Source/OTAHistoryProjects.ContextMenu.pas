@@ -3,24 +3,20 @@ unit OTAHistoryProjects.ContextMenu;
 interface
 
 uses
-  ToolsAPI,
   System.SysUtils,
-  System.Classes;
+  System.Classes,
+  ToolsAPI;
 
 type
   TOTAHPContextMenu = class(TNotifierObject, IOTAProjectMenuItemCreatorNotifier)
   protected
-    procedure AddMenu(const Project: IOTAProject;
-                      const IdentList: TStrings;
-                      const ProjectManagerMenuList: IInterfaceList;
-                            IsMultiSelect: Boolean);
+    procedure AddMenu(const AProject: IOTAProject; const AIdentList: TStrings;
+      const AProjectManagerMenuList: IInterfaceList; AIsMultiSelect: Boolean);
   public
     class function New: IOTAProjectMenuItemCreatorNotifier;
   end;
 
   TOTAHPItemMenu = class(TNotifierObject, IOTALocalMenu, IOTAProjectManagerMenu)
-  private
-
   protected
     function GetCaption: string;
     function GetChecked: Boolean;
@@ -30,20 +26,19 @@ type
     function GetParent: string;
     function GetPosition: Integer;
     function GetVerb: string;
-    procedure SetCaption(const Value: string);
-    procedure SetChecked(Value: Boolean);
-    procedure SetEnabled(Value: Boolean);
-    procedure SetHelpContext(Value: Integer);
-    procedure SetName(const Value: string);
-    procedure SetParent(const Value: string);
-    procedure SetPosition(Value: Integer);
-    procedure SetVerb(const Value: string);
+    procedure SetCaption(const AValue: string);
+    procedure SetChecked(AValue: Boolean);
+    procedure SetEnabled(AValue: Boolean);
+    procedure SetHelpContext(AValue: Integer);
+    procedure SetName(const AValue: string);
+    procedure SetParent(const AValue: string);
+    procedure SetPosition(AValue: Integer);
+    procedure SetVerb(const AValue: string);
     function GetIsMultiSelectable: Boolean;
-    procedure SetIsMultiSelectable(Value: Boolean);
-    procedure Execute(const MenuContextList: IInterfaceList); overload;
-    function PreExecute(const MenuContextList: IInterfaceList): Boolean;
-    function PostExecute(const MenuContextList: IInterfaceList): Boolean;
-
+    procedure SetIsMultiSelectable(AValue: Boolean);
+    procedure Execute(const AMenuContextList: IInterfaceList); overload;
+    function PreExecute(const AMenuContextList: IInterfaceList): Boolean;
+    function PostExecute(const AMenuContextList: IInterfaceList): Boolean;
   public
     class function New: IOTAProjectManagerMenu;
   end;
@@ -66,37 +61,35 @@ end;
 
 { TOTAHPContextMenu }
 
-procedure TOTAHPContextMenu.AddMenu(const Project: IOTAProject;
-                                    const IdentList: TStrings;
-                                    const ProjectManagerMenuList: IInterfaceList;
-                                          IsMultiSelect: Boolean);
+procedure TOTAHPContextMenu.AddMenu(const AProject: IOTAProject; const AIdentList: TStrings;
+  const AProjectManagerMenuList: IInterfaceList; AIsMultiSelect: Boolean);
 begin
-  if (IdentList.IndexOf(sProjectGroupContainer) < 0) then
+  if (AIdentList.IndexOf(sProjectGroupContainer) < 0) then
     Exit;
 
-  ProjectManagerMenuList.Add(TOTAHPItemMenu.New);
+  AProjectManagerMenuList.Add(TOTAHPItemMenu.New);
 end;
 
 class function TOTAHPContextMenu.New: IOTAProjectMenuItemCreatorNotifier;
 begin
-  result := Self.Create;
+  Result := Self.Create;
 end;
 
 { TOTAHPItemMenu }
 
-procedure TOTAHPItemMenu.Execute(const MenuContextList: IInterfaceList);
+procedure TOTAHPItemMenu.Execute(const AMenuContextList: IInterfaceList);
 begin
   ShowHistoryProjects;
 end;
 
 function TOTAHPItemMenu.GetCaption: string;
 begin
-  result := 'History Projects';
+  Result := 'History Projects';
 end;
 
 function TOTAHPItemMenu.GetChecked: Boolean;
 begin
-  result := False;
+  Result := False;
 end;
 
 function TOTAHPItemMenu.GetEnabled: Boolean;
@@ -106,27 +99,27 @@ end;
 
 function TOTAHPItemMenu.GetHelpContext: Integer;
 begin
-  result := 0;
+  Result := 0;
 end;
 
 function TOTAHPItemMenu.GetIsMultiSelectable: Boolean;
 begin
-  result := False;
+  Result := False;
 end;
 
 function TOTAHPItemMenu.GetName: string;
 begin
-  result := 'imHistoryProjects';
+  Result := 'imHistoryProjects';
 end;
 
 function TOTAHPItemMenu.GetParent: string;
 begin
-  result := '';
+  Result := '';
 end;
 
 function TOTAHPItemMenu.GetPosition: Integer;
 begin
-  result := pmmpAddExistingTarget + 100;;
+  Result := pmmpAddExistingTarget + 100;;
 end;
 
 function TOTAHPItemMenu.GetVerb: string;
@@ -136,62 +129,53 @@ end;
 
 class function TOTAHPItemMenu.New: IOTAProjectManagerMenu;
 begin
-  result := Self.create;
+  Result := Self.Create;
 end;
 
-function TOTAHPItemMenu.PostExecute(const MenuContextList: IInterfaceList): Boolean;
+function TOTAHPItemMenu.PostExecute(const AMenuContextList: IInterfaceList): Boolean;
 begin
-  result := True;
+  Result := True;
 end;
 
-function TOTAHPItemMenu.PreExecute(const MenuContextList: IInterfaceList): Boolean;
+function TOTAHPItemMenu.PreExecute(const AMenuContextList: IInterfaceList): Boolean;
 begin
-  result := True;
+  Result := True;
 end;
 
-procedure TOTAHPItemMenu.SetCaption(const Value: string);
+procedure TOTAHPItemMenu.SetCaption(const AValue: string);
 begin
-
 end;
 
-procedure TOTAHPItemMenu.SetChecked(Value: Boolean);
+procedure TOTAHPItemMenu.SetChecked(AValue: Boolean);
 begin
-
 end;
 
-procedure TOTAHPItemMenu.SetEnabled(Value: Boolean);
+procedure TOTAHPItemMenu.SetEnabled(AValue: Boolean);
 begin
-
 end;
 
-procedure TOTAHPItemMenu.SetHelpContext(Value: Integer);
+procedure TOTAHPItemMenu.SetHelpContext(AValue: Integer);
 begin
-
 end;
 
-procedure TOTAHPItemMenu.SetIsMultiSelectable(Value: Boolean);
+procedure TOTAHPItemMenu.SetIsMultiSelectable(AValue: Boolean);
 begin
-
 end;
 
-procedure TOTAHPItemMenu.SetName(const Value: string);
+procedure TOTAHPItemMenu.SetName(const AValue: string);
 begin
-
 end;
 
-procedure TOTAHPItemMenu.SetParent(const Value: string);
+procedure TOTAHPItemMenu.SetParent(const AValue: string);
 begin
-
 end;
 
-procedure TOTAHPItemMenu.SetPosition(Value: Integer);
+procedure TOTAHPItemMenu.SetPosition(AValue: Integer);
 begin
-
 end;
 
-procedure TOTAHPItemMenu.SetVerb(const Value: string);
+procedure TOTAHPItemMenu.SetVerb(const AValue: string);
 begin
-
 end;
 
 initialization
