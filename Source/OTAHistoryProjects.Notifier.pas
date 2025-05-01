@@ -7,6 +7,7 @@ uses
   System.Classes,
   System.IniFiles,
   System.DateUtils,
+  Vcl.Dialogs,
   ToolsAPI;
 
 type
@@ -29,7 +30,8 @@ type
 var
   Index: Integer = -1;
 
-procedure RegisterHistoryProjectsNotifier;
+procedure RegisterHistoryProjectsNotifier; overload;
+procedure RegisterHistoryProjectsNotifier(ABorlandIDE: IBorlandIDEServices); overload;
 
 implementation
 
@@ -75,7 +77,7 @@ end;
 
 class function TOTAHPNotifier.New: IOTAIDENotifier;
 begin
-  Result := self.Create;
+  Result := Self.Create;
 end;
 
 procedure RegisterHistoryProjectsNotifier;
@@ -83,9 +85,14 @@ begin
   Index := (BorlandIDEServices as IOTAServices).AddNotifier(TOTAHPNotifier.New);
 end;
 
+procedure RegisterHistoryProjectsNotifier(ABorlandIDE: IBorlandIDEServices);
+begin
+  Index := (ABorlandIDE as IOTAServices).AddNotifier(TOTAHPNotifier.New);
+end;
+
 initialization
 
 finalization
-  (BorlandIDEServices as IOTAServices).RemoveNotifier(Index);
-
+  if Index >= 0 then
+    (BorlandIDEServices as IOTAServices).RemoveNotifier(Index);
 end.

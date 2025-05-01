@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{0F02BE95-7841-4EA1-9643-7579AFD402D8}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="OTAHistoryProjectsPkg.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="OTAHistoryProjects.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="OTAHistoryProjectsPkg">
+        <MSBuild Projects="OTAHistoryProjectsPkg.dproj"/>
+    </Target>
+    <Target Name="OTAHistoryProjectsPkg:Clean">
+        <MSBuild Projects="OTAHistoryProjectsPkg.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="OTAHistoryProjectsPkg:Make">
+        <MSBuild Projects="OTAHistoryProjectsPkg.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="OTAHistoryProjects">
+        <MSBuild Projects="OTAHistoryProjects.dproj"/>
+    </Target>
+    <Target Name="OTAHistoryProjects:Clean">
+        <MSBuild Projects="OTAHistoryProjects.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="OTAHistoryProjects:Make">
+        <MSBuild Projects="OTAHistoryProjects.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="OTAHistoryProjectsPkg;OTAHistoryProjects"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="OTAHistoryProjectsPkg:Clean;OTAHistoryProjects:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="OTAHistoryProjectsPkg:Make;OTAHistoryProjects:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

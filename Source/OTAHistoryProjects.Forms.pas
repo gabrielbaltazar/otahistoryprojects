@@ -27,6 +27,7 @@ type
     DBText3: TDBText;
     CdsProjects: TClientDataSet;
     DataSourceProjects: TDataSource;
+    ImgRefresh: TImage;
     procedure FormShow(Sender: TObject);
     procedure EdtSearchKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure LstProjectsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -36,6 +37,7 @@ type
     procedure EdtProjectTypeClick(Sender: TObject);
     procedure EdtSearchChange(Sender: TObject);
     procedure GridProjectsKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure ImgRefreshClick(Sender: TObject);
   private
     FProjects: TObjectList<TOTAHPProject>;
 
@@ -86,8 +88,7 @@ begin
   LProjectType := EmptyStr;
   case EdtProjectType.ItemIndex of
     1: LProjectType := '.dproj';
-    2: LProjectType := '.dpk';
-    3: LProjectType := '.groupproj';
+    2: LProjectType := '.groupproj';
   end;
 
   if LProjectType <> EmptyStr then
@@ -169,6 +170,12 @@ begin
     OpenProject;
 end;
 
+procedure TFrmOTAHistoryProjects.ImgRefreshClick(Sender: TObject);
+begin
+  FreeAndNil(FProjects);
+  ListProjects;
+end;
+
 procedure TFrmOTAHistoryProjects.ListProjects;
 var
   LProject: TOTAHPProject;
@@ -209,10 +216,6 @@ begin
 end;
 
 initialization
-{$IF CompilerVersion >= 32.0}
-  (BorlandIDEServices as IOTAIDEThemingServices250)
-    .RegisterFormClass(TFrmOTAHistoryProjects);
-{$ENDIF}
 
 finalization
   FrmOTAHistoryProjects.Free;

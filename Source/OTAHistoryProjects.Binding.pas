@@ -5,8 +5,9 @@ interface
 uses
   System.SysUtils,
   System.Classes,
-  ToolsAPI,
   Vcl.Menus,
+  Vcl.Dialogs,
+  ToolsAPI,
   OTAHistoryProjects.Forms;
 
 type
@@ -26,7 +27,8 @@ type
 var
   Index: Integer = -1;
 
-procedure RegisterHistoryProjectBinding;
+procedure RegisterHistoryProjectBinding; overload;
+procedure RegisterHistoryProjectBinding(ABorlandIDE: IBorlandIDEServices); overload;
 
 implementation
 
@@ -34,6 +36,15 @@ procedure RegisterHistoryProjectBinding;
 begin
   Index := (BorlandIDEServices as IOTAKeyboardServices)
     .AddKeyboardBinding(TOTAHPBinding.New);
+end;
+
+procedure RegisterHistoryProjectBinding(ABorlandIDE: IBorlandIDEServices);
+var
+  LKeyboard: IOTAKeyboardBinding;
+begin
+  LKeyboard := TOTAHPBinding.New;
+  Index := (ABorlandIDE as IOTAKeyboardServices)
+    .AddKeyboardBinding(LKeyboard);
 end;
 
 { TOTAHPBinding }
@@ -74,7 +85,8 @@ end;
 initialization
 
 finalization
-  (BorlandIDEServices as IOTAKeyboardServices)
-    .RemoveKeyboardBinding(Index);
+  if Index >= 0 then
+    (BorlandIDEServices as IOTAKeyboardServices)
+      .RemoveKeyboardBinding(Index);
 
 end.

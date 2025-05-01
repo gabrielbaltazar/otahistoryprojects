@@ -5,6 +5,7 @@ interface
 uses
   System.SysUtils,
   System.Classes,
+  Vcl.Dialogs,
   ToolsAPI;
 
 type
@@ -46,7 +47,8 @@ type
 var
   IndexContextMenu: Integer = -1;
 
-procedure RegisterHistoryProjectsContextMenu;
+procedure RegisterHistoryProjectsContextMenu; overload;
+procedure RegisterHistoryProjectsContextMenu(ABorlandIDE: IBorlandIDEServices); overload;
 
 implementation
 
@@ -56,6 +58,12 @@ uses
 procedure RegisterHistoryProjectsContextMenu;
 begin
   IndexContextMenu := (BorlandIDEServices as IOTAProjectManager)
+    .AddMenuItemCreatorNotifier(TOTAHPContextMenu.New);
+end;
+
+procedure RegisterHistoryProjectsContextMenu(ABorlandIDE: IBorlandIDEServices);
+begin
+  IndexContextMenu := (ABorlandIDE as IOTAProjectManager)
     .AddMenuItemCreatorNotifier(TOTAHPContextMenu.New);
 end;
 
@@ -181,7 +189,7 @@ end;
 initialization
 
 finalization
-  (BorlandIDEServices as IOTAProjectManager)
-    .RemoveMenuItemCreatorNotifier(IndexContextMenu);
-
+  if IndexContextMenu >= 0 then
+    (BorlandIDEServices as IOTAProjectManager)
+      .RemoveMenuItemCreatorNotifier(IndexContextMenu);
 end.
